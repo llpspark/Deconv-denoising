@@ -1,0 +1,3 @@
+this fold contain vgg-decon cut pool and unpool and skip connection like resNET and 6con-6decon
+
+and used for image to pure noise task.

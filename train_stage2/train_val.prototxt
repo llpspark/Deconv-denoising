@@ -1,0 +1,404 @@
+name: "llp-Deconv"
+
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: "/home/gt/llp-Deconv1/data/im2noi_3channel_debulr_224/train.txt"
+    batch_size: 2
+  }
+  include: { phase: TRAIN }
+}
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "data"
+  top: "label"
+  hdf5_data_param {
+    source: "/home/gt/llp-Deconv1/data/im2noi_3channel_debulr_224/test.txt"
+    batch_size: 2
+  }
+  include: { phase: TEST }
+}  
+ layer {
+  bottom: "data"
+  top: "conv1_1"
+  name: "conv1_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+   weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }
+}
+layer {
+  bottom: "conv1_1"
+  top: "conv1_1"
+  name: "relu1_1"
+  type: "ReLU"
+}
+layer {  
+  bottom: "conv1_1"  
+  top: "c1_2"  
+  name: "conv1_2"  
+  type: "Convolution"  
+  param {  
+    lr_mult: 1  
+    decay_mult: 1  
+  }  
+  param {  
+    lr_mult: 2  
+    decay_mult: 0  
+  }  
+  convolution_param {  
+    num_output: 64  
+    pad: 1  
+    kernel_size: 3  
+   weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }  
+}  
+layer {  
+  bottom: "c1_2"  
+  top: "c1_2"  
+  name: "relu1_2"  
+  type: "ReLU"  
+}  
+
+layer {  
+  bottom: "c1_2"  
+  top: "c2_1"  
+  name: "conv2_1"  
+  type: "Convolution"  
+  param {  
+    lr_mult: 1  
+    decay_mult: 1  
+  }  
+  param {  
+    lr_mult: 2  
+    decay_mult: 0  
+  }  
+  convolution_param {  
+    num_output: 128  
+    pad: 1  
+    kernel_size: 3  
+   weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }  
+}  
+layer {  
+  bottom: "c2_1"  
+  top: "c2_1"  
+  name: "relu2_1"  
+  type: "ReLU"  
+}  
+layer {  
+  bottom: "c2_1"  
+  top: "c2_2"  
+  name: "conv2_2"  
+  type: "Convolution"  
+  param {  
+    lr_mult: 1  
+    decay_mult: 1  
+  }  
+  param {  
+    lr_mult: 2  
+    decay_mult: 0  
+  }  
+  convolution_param {  
+    num_output: 128  
+    pad: 1  
+    kernel_size: 3  
+     weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }  
+}  
+layer {  
+  bottom: "c2_2"  
+  top: "c2_2"  
+  name: "relu2_2"  
+  type: "ReLU"  
+}  
+# residual1
+layer {
+  name: "residual1"
+  type: "Eltwise"
+  bottom: "c2_1"
+  bottom: "c2_2"
+  top: "resi_1"
+}
+layer {  name: "relur1"  type: "ReLU"  bottom: "resi_1"  top: "resi_1a" }
+layer {  
+  bottom: "resi_1a"  
+  top: "c3_1"  
+  name: "conv3_1"  
+  type: "Convolution"  
+  param {  
+    lr_mult: 1  
+    decay_mult: 1  
+  }  
+  param {  
+    lr_mult: 2  
+    decay_mult: 0  
+  }  
+  convolution_param {  
+    num_output: 256  
+    pad: 1  
+    kernel_size: 3  
+   weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }  
+}  
+layer {  
+  bottom: "c3_1"  
+  top: "c3_1"  
+  name: "relu3_1"  
+  type: "ReLU"  
+}  
+layer {  
+  bottom: "c3_1"  
+  top: "c3_2"  
+  name: "conv3_2"  
+  type: "Convolution"  
+  param {  
+    lr_mult: 1  
+    decay_mult: 1  
+  }  
+  param {  
+    lr_mult: 2  
+    decay_mult: 0  
+  }  
+  convolution_param {  
+    num_output: 256  
+    pad: 1  
+    kernel_size: 3  
+   weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }  
+}  
+layer {  
+  bottom: "c3_2"  
+  top: "c3_2"  
+  name: "relu3_2"  
+  type: "ReLU"  
+}  
+
+layer {
+  bottom: "c3_2"
+  top: "d3_2"
+  name: "deconv3_2"
+  type: "Deconvolution"
+  convolution_param { 
+    num_output:  256    
+    kernel_size: 3
+    pad: 1
+   weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }
+}
+layer {
+  name: "drelu3_2"
+  type: "ReLU"
+  bottom: "d3_2"
+  top: "d3_2" 
+}
+
+# residual2
+layer {
+  name: "residual2"
+  type: "Eltwise"
+  bottom: "c3_2"
+  bottom: "d3_2"
+  top: "resi_2"
+}
+layer {  name: "relur2"  type: "ReLU"  bottom: "resi_2"  top: "resi_2a" }
+layer {
+  bottom: "resi_2a"
+  top: "d3_1"
+  name: "deconv3_1"
+  type: "Deconvolution"
+  convolution_param { 
+    num_output:  256    
+    kernel_size: 3
+    pad: 1
+   weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }
+}
+layer {
+  name: "drelu3_1"
+  type: "ReLU"
+  bottom: "d3_1"
+  top: "d3_1" 
+}
+layer {
+  bottom: "d3_1"
+  top: "d2_2"
+  name: "deconv2_2"
+  type: "Deconvolution"
+  convolution_param { 
+    num_output:  128    
+    kernel_size: 3
+    pad: 1
+    weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }
+}
+layer {
+  name: "drelu2_2"
+  type: "ReLU"
+  bottom: "d2_2"
+  top: "d2_2" 
+}
+
+layer {
+  bottom: "d2_2"
+  top: "d2_1"
+  name: "deconv2_1"
+  type: "Deconvolution"
+  convolution_param { 
+    num_output:  128    
+    kernel_size: 3
+    pad: 1
+     weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }
+}
+layer {
+  name: "drelu2_1"
+  type: "ReLU"
+  bottom: "d2_1"
+  top: "d2_1" 
+}
+# residual3
+layer {
+  name: "residual3"
+  type: "Eltwise"
+  bottom: "d2_2"
+  bottom: "d2_1"
+  top: "resi_3"
+}
+layer {  name: "relur3"  type: "ReLU"  bottom: "resi_3"  top: "resi_3a" }
+layer {
+  bottom: "resi_3a"
+  top: "d1_2"
+  name: "deconv1_2"
+  type: "Deconvolution"
+  convolution_param { 
+    num_output:  64    
+    kernel_size: 3
+    pad: 1
+    weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }
+}
+layer {
+  name: "drelu1_2"
+  type: "ReLU"
+  bottom: "d1_2"
+  top: "d1_2" 
+}
+layer {
+  bottom: "d1_2"
+  top: "d1_1"
+  name: "deconv1_1"
+  type: "Deconvolution"
+  convolution_param { 
+    num_output:  3    
+    kernel_size: 3
+    pad: 1
+      weight_filler {  
+      type: "gaussian"  
+      std: 0.01  
+    }  
+    bias_filler {  
+      type: "constant"  
+      value: 0  
+    }  
+  }
+}
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "d1_1"
+  bottom: "label"
+  top: "loss"
+}
